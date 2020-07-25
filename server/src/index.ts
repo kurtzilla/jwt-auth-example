@@ -17,7 +17,7 @@ import { createAccessToken, createRefreshToken } from "./auth";
   app.use(
     cors({
       origin: "http://localhost:3000",
-      credentials: true
+      credentials: true,
     })
   );
   app.use(cookieParser());
@@ -50,16 +50,19 @@ import { createAccessToken, createRefreshToken } from "./auth";
 
     sendRefreshToken(res, createRefreshToken(user));
 
-    return res.send({ ok: true, accessToken: createAccessToken(user) });
+    return res.send({
+      ok: true,
+      accessToken: createAccessToken(user),
+    });
   });
 
   await createConnection();
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver]
+      resolvers: [UserResolver],
     }),
-    context: ({ req, res }) => ({ req, res })
+    context: ({ req, res }) => ({ req, res }),
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
@@ -69,13 +72,13 @@ import { createAccessToken, createRefreshToken } from "./auth";
   });
 })();
 
-// createConnection().then(async connection => {
-
+// createConnection()
+//   .then(async (connection) => {
 //     console.log("Inserting a new user into the database...");
 //     const user = new User();
 //     user.firstName = "Timber";
 //     user.lastName = "Saw";
-//     user.age = 25;
+//     // user.age = 25;
 //     await connection.manager.save(user);
 //     console.log("Saved a new user with id: " + user.id);
 
@@ -83,6 +86,8 @@ import { createAccessToken, createRefreshToken } from "./auth";
 //     const users = await connection.manager.find(User);
 //     console.log("Loaded users: ", users);
 
-//     console.log("Here you can setup and run express/koa/any other framework.");
-
-// }).catch(error => console.log(error));
+//     console.log(
+//       "Here you can setup and run express/koa/any other framework."
+//     );
+//   })
+//   .catch((error) => console.log(error));
