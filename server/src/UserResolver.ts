@@ -7,7 +7,7 @@ import {
   Field,
   Ctx,
   UseMiddleware,
-  Int
+  Int,
 } from "type-graphql";
 import { hash, compare } from "bcryptjs";
 import { User } from "./entity/User";
@@ -55,7 +55,10 @@ export class UserResolver {
 
     try {
       const token = authorization.split(" ")[1];
-      const payload: any = verify(token, process.env.ACCESS_TOKEN_SECRET!);
+      const payload: any = verify(
+        token,
+        process.env.ACCESS_TOKEN_SECRET!
+      );
       return User.findOne(payload.userId);
     } catch (err) {
       console.log(err);
@@ -71,7 +74,9 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  async revokeRefreshTokensForUser(@Arg("userId", () => Int) userId: number) {
+  async revokeRefreshTokensForUser(
+    @Arg("userId", () => Int) userId: number
+  ) {
     await getConnection()
       .getRepository(User)
       .increment({ id: userId }, "tokenVersion", 1);
@@ -103,7 +108,7 @@ export class UserResolver {
 
     return {
       accessToken: createAccessToken(user),
-      user
+      user,
     };
   }
 
@@ -117,7 +122,7 @@ export class UserResolver {
     try {
       await User.insert({
         email,
-        password: hashedPassword
+        password: hashedPassword,
       });
     } catch (err) {
       console.log(err);
