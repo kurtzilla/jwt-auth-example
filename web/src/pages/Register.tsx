@@ -2,33 +2,46 @@ import React, { useState } from "react";
 import { useRegisterMutation } from "../generated/graphql";
 import { RouteComponentProps } from "react-router-dom";
 
-export const Register: React.FC<RouteComponentProps> = ({ history }) => {
+export const Register: React.FC<RouteComponentProps> = ({
+  history,
+}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [register] = useRegisterMutation();
 
   return (
     <form
-      onSubmit={async e => {
+      onSubmit={async (e) => {
         e.preventDefault();
         console.log("form submitted");
-        const response = await register({
-          variables: {
-            email,
-            password
-          }
-        });
 
-        console.log(response);
+        try {
+          const response = await register({
+            variables: {
+              email,
+              password,
+            },
+          });
 
-        history.push("/");
+          console.log(response);
+
+          history.push("/");
+        } catch (error) {
+          console.error(error);
+
+          // clear inputs? at least pwd
+          setPassword("");
+          // relate error to user - invalid reg
+          setError("invalid registration");
+        }
       }}
     >
       <div>
         <input
           value={email}
           placeholder="email"
-          onChange={e => {
+          onChange={(e) => {
             setEmail(e.target.value);
           }}
         />
@@ -38,12 +51,13 @@ export const Register: React.FC<RouteComponentProps> = ({ history }) => {
           type="password"
           value={password}
           placeholder="password"
-          onChange={e => {
+          onChange={(e) => {
             setPassword(e.target.value);
           }}
         />
       </div>
       <button type="submit">register</button>
+      {error && <div style={{ color: "red" }}>{error}</div>}
     </form>
   );
 };
