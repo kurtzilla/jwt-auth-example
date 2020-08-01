@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "passport": "^0.4.1"
+  },
+  "devDependencies": {
+    "@types/passport": "^1.0.4"
+  }
+}
