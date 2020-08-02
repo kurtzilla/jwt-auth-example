@@ -11,9 +11,10 @@ import { registerRoutes } from "./Routes";
 
 (async () => {
   const app = express();
+
   app.use(
     cors({
-      origin: "http://localhost:3000",
+      origin: process.env.ALLOW_CORS_HOST,
       credentials: true,
     })
   );
@@ -34,6 +35,8 @@ import { registerRoutes } from "./Routes";
   apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(process.env.PORT, () => {
-    console.log("express server started");
+    console.log(
+      `express server started on ${process.env.SERVER_DOMAIN}:${process.env.PORT}`
+    );
   });
 })();

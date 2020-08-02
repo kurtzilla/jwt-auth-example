@@ -49,15 +49,6 @@ export class UserResolver {
     return "hi!";
   }
 
-  // demonstrates an authenticated query
-  // the bye method is simply a stub for testing the isAuth middleware
-  @Query(() => String)
-  @UseMiddleware(isAuth)
-  bye(@Ctx() { payload }: MyContext) {
-    console.log(payload);
-    return `your user id is: ${payload!.userId}`;
-  }
-
   @Query(() => String)
   @UseMiddleware(isAuth)
   currentUserID(@Ctx() { payload }: MyContext) {
@@ -70,6 +61,7 @@ export class UserResolver {
     return payload!.email;
   }
 
+  // todo make this a method of the class entity
   @Query(() => String)
   @UseMiddleware(isAuth)
   currentUserFullName(@Ctx() { payload }: MyContext) {
@@ -88,7 +80,7 @@ export class UserResolver {
   }
 
   @Query(() => User, { nullable: true })
-  me(@Ctx() context: MyContext) {
+  currentUser(@Ctx() context: MyContext) {
     const authorization = context.req.headers["authorization"];
 
     if (!authorization) {
@@ -145,7 +137,6 @@ export class UserResolver {
     }
 
     // login successful
-
     sendRefreshToken(res, createRefreshToken(user));
 
     return {
