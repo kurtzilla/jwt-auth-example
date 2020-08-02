@@ -1,20 +1,23 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useMeQuery, useLogoutMutation } from "./generated/graphql";
+import {
+  useCurrentUserQuery,
+  useLogoutMutation,
+} from "./generated/graphql";
 import { setAccessToken } from "./accessToken";
 
 interface Props {}
 
 export const Header: React.FC<Props> = () => {
-  const { data, loading } = useMeQuery();
+  const { data, loading } = useCurrentUserQuery();
   const [logout, { client }] = useLogoutMutation();
 
   let body: any = null;
 
   if (loading) {
     body = null;
-  } else if (data && data.me) {
-    body = <div>you are logged in as: {data.me.email}</div>;
+  } else if (data && data.currentUser) {
+    body = <div>you are logged in as: {data.currentUser.email}</div>;
   } else {
     body = <div>not logged in</div>;
   }
@@ -31,10 +34,10 @@ export const Header: React.FC<Props> = () => {
         <Link to="/login">login</Link>
       </div>
       <div>
-        <Link to="/bye">bye</Link>
+        <Link to="/currentUser">currentUser</Link>
       </div>
       <div>
-        {!loading && data && data.me ? (
+        {!loading && data && data.currentUser ? (
           <button
             onClick={async () => {
               await logout();

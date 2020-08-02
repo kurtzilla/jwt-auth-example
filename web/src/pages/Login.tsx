@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { RouteComponentProps } from "react-router";
 import {
   useLoginMutation,
-  MeDocument,
-  MeQuery,
+  CurrentUserQuery,
+  CurrentUserDocument,
 } from "../generated/graphql";
 import { setAccessToken } from "../accessToken";
 
@@ -30,11 +30,10 @@ export const Login: React.FC<RouteComponentProps> = ({ history }) => {
               if (!data) {
                 return null;
               }
-
-              store.writeQuery<MeQuery>({
-                query: MeDocument,
+              store.writeQuery<CurrentUserQuery>({
+                query: CurrentUserDocument,
                 data: {
-                  me: data.login.user,
+                  currentUser: data.login.user,
                 },
               });
             },

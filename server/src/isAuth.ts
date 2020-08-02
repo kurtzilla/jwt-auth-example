@@ -3,8 +3,26 @@ import { verify } from "jsonwebtoken";
 import { MyContext } from "./MyContext";
 
 // bearer 102930ajslkdaoq01
+// grab access token from login mutation
+// insert into HTTP HEADERS
+// {
+//  "authorization": "bearer <access_token>"
+// }
+//
+// Returns
+// AUTH PAYLOAD {
+//   userId: 4,
+//   email: 'sam@sam.com',
+//   firstName: 'sam',
+//   lastName: 'sam',
+//   iat: 1596310817,
+//   exp: 1596311717
+// }
 
-export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
+export const isAuth: MiddlewareFn<MyContext> = (
+  { context },
+  next
+) => {
   const authorization = context.req.headers["authorization"];
 
   if (!authorization) {
@@ -14,6 +32,8 @@ export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
   try {
     const token = authorization.split(" ")[1];
     const payload = verify(token, process.env.ACCESS_TOKEN_SECRET!);
+    // console.log("AUTH PAYLOAD", payload);
+
     context.payload = payload as any;
   } catch (err) {
     console.log(err);

@@ -19,6 +19,22 @@ import { getConnection } from "typeorm";
 import { verify } from "jsonwebtoken";
 
 @ObjectType()
+class PayloadResponse {
+  @Field()
+  userId: string;
+  @Field()
+  email: string;
+  @Field()
+  firstName: string;
+  @Field()
+  lastName: string;
+  @Field()
+  iat: string;
+  @Field()
+  exp: string;
+}
+
+@ObjectType()
 class LoginResponse {
   @Field()
   accessToken: string;
@@ -33,11 +49,37 @@ export class UserResolver {
     return "hi!";
   }
 
+  // demonstrates an authenticated query
+  // the bye method is simply a stub for testing the isAuth middleware
   @Query(() => String)
   @UseMiddleware(isAuth)
   bye(@Ctx() { payload }: MyContext) {
     console.log(payload);
     return `your user id is: ${payload!.userId}`;
+  }
+
+  @Query(() => String)
+  @UseMiddleware(isAuth)
+  currentUserID(@Ctx() { payload }: MyContext) {
+    return payload!.userId;
+  }
+
+  @Query(() => String)
+  @UseMiddleware(isAuth)
+  currentUserEmail(@Ctx() { payload }: MyContext) {
+    return payload!.email;
+  }
+
+  @Query(() => String)
+  @UseMiddleware(isAuth)
+  currentUserFullName(@Ctx() { payload }: MyContext) {
+    return `${payload!.firstName} ${payload!.lastName}`;
+  }
+
+  @Query(() => PayloadResponse)
+  @UseMiddleware(isAuth)
+  currentUserPayload(@Ctx() { payload }: MyContext) {
+    return payload!;
   }
 
   @Query(() => [User])
@@ -126,6 +168,37 @@ export class UserResolver {
       });
     } catch (err) {
       console.log(err);
+      return false;
+    }
+
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  async updateFirstName_LastName(
+    @Arg("email") email: string,
+    @Arg("firstName") firstName: string,
+    @Arg("lastName") lastName: string
+  ) {
+    // if (!firstName || firstName.trim().length == 0) {
+    //   throw new Error("please supply a first name");
+    // }
+    // if (!lastName || lastName.trim().length == 0) {
+    //   throw new Error("please supply a last name");
+    // }
+
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      throw new Error("could not find user");
+    }
+
+    user.firstName = firstName;
+    user.lastName = lastName;
+
+    try {
+      user.save();
+    } catch (error) {
       return false;
     }
 
